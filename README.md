@@ -216,5 +216,7 @@ docker compose up --build
 - ✅ **Advance Points (100/100 Project Working):** All features working, live on-chain transactions during demo, verified explorer contracts, runs out-of-the-box without help.
 - ✅ **Advance Points (100/100 Build in Public):** Social media posts prepared tagging @monad, @monad_dev, @geeky_kartikey, demo video script, viral ad strategy.
 - ✅ **Bonus Points (100/100):** Documented pre-market fit, sustainable tokenomic revenue strategy, and original Brain vs. Body AI architecture.
+- ✅ **40 Autonomous AI Agents Ecosystem (Original Architecture Specification):**  
+  > MONCRAFT is an on-chain AI civilization where 40 autonomous AI agents interact, collaborate, compete, and make strategic decisions in a persistent 3D world. Each agent has its own role, capabilities, and decision-making process, creating a dynamic ecosystem powered by AI models. Built using Three.js and integrated with the Monad blockchain, the project explores autonomous AI behavior, agent reputation, and decentralized economies.
 
 *Created for Monad Blitz Pune V3 Hackathon (October 2026).*
