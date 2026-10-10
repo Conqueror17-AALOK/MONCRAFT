@@ -221,7 +221,7 @@ async function bootstrap() {
     if (!address) {
       return reply.code(400).send({ error: 'Backer address is required' });
     }
-    const result = gameEngine.claimBackerPayout(address);
+    const result = await gameEngine.claimBackerPayout(address);
     return result;
   });
 

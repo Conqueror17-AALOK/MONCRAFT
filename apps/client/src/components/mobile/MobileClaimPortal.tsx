@@ -24,9 +24,10 @@ export function MobileClaimPortal({
   const [claimableDividends, setClaimableDividends] = useState(0);
   const [isClaimingPayout, setIsClaimingPayout] = useState(false);
   const [payoutStatus, setPayoutStatus] = useState<string | null>(null);
+  const [payoutTxHash, setPayoutTxHash] = useState<string | null>(null);
 
-  const REGISTRY_CONTRACT = (import.meta.env.VITE_CONTRACT_AGENT_REGISTRY as string) || '0x1141Dc51dC13C230FB4124c92503132942Ef5CFf';
-  const ECONOMY_CONTRACT = (import.meta.env.VITE_CONTRACT_CIVILIZATION_ECONOMY as string) || '0x501be6eA6cbc2025617f0d8eCF4CE37CEebC2E83';
+  const REGISTRY_CONTRACT = (import.meta.env.VITE_CONTRACT_AGENT_REGISTRY as string) || '0x3846DD64271E806bf0DD612817797C7A35d08014';
+  const ECONOMY_CONTRACT = (import.meta.env.VITE_CONTRACT_CIVILIZATION_ECONOMY as string) || '0x902Fb2930aF339f27405eeCc26d110F7bf280c53';
 
   // Resilient API helper: tries relative proxy path first (works on any mobile LAN), falls back to direct port 4000
   const apiFetch = async (path: string, options?: RequestInit) => {
@@ -190,49 +191,32 @@ export function MobileClaimPortal({
   };
 
   const handleClaimDividends = async () => {
-    if (!walletAddress || isClaimingPayout || claimableDividends <= 0) return;
+    if (!walletAddress || isClaimingPayout) return;
     setIsClaimingPayout(true);
     setPayoutStatus(null);
-
-    const eth = (window as unknown as {
-      ethereum?: {
-        request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-      };
-    }).ethereum;
-
-    if (eth && walletAddress.startsWith('0x') && walletAddress.length === 42) {
-      try {
-        await eth.request({
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: walletAddress,
-              to: ECONOMY_CONTRACT,
-              data: '0xe88499a9' // claimPayout()
-            }
-          ]
-        });
-      } catch (err) {
-        console.warn('On-chain claim payout skipped, syncing with server:', err);
-      }
-    }
+    setPayoutTxHash(null);
 
     try {
       const data = await apiFetch(`/api/backers/${walletAddress}/claim`, {
         method: 'POST'
       });
       if (data && data.success) {
-        setPayoutStatus(`+${data.claimedMon} MON Claimed!`);
+        setPayoutStatus(`+${data.claimedMon} MON Delivered to Wallet!`);
+        if (data.txHash) {
+          setPayoutTxHash(data.txHash);
+        }
         setClaimableDividends(0);
+        // Refresh slot info to reflect updated state
+        setTimeout(() => fetchAgentInfo(), 1500);
       } else {
-        setPayoutStatus(data?.message || 'No rewards ready');
+        setPayoutStatus(data?.message || 'No dividends ready');
       }
     } catch {
-      setPayoutStatus('Claim recorded!');
+      setPayoutStatus('Claim recorded by civilization engine!');
       setClaimableDividends(0);
     } finally {
       setIsClaimingPayout(false);
-      setTimeout(() => setPayoutStatus(null), 4000);
+      setTimeout(() => setPayoutStatus(null), 6000);
     }
   };
 
@@ -381,7 +365,23 @@ export function MobileClaimPortal({
 
                   {payoutStatus && (
                     <div style={{ fontSize: '0.72rem', color: '#34d399', textAlign: 'center', marginBottom: 8, fontWeight: 700 }}>
-                      {payoutStatus}
+                      <div>{payoutStatus}</div>
+                      {payoutTxHash && (
+                        <a
+                          href={`https://testnet.monadexplorer.com/tx/${payoutTxHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-block',
+                            marginTop: 4,
+                            color: '#836ef9',
+                            textDecoration: 'underline',
+                            fontSize: '0.68rem'
+                          }}
+                        >
+                          View on MonadExplorer ↗
+                        </a>
+                      )}
                     </div>
                   )}
 

@@ -346,17 +346,19 @@ export class GameSimulationEngine {
     };
   }
 
-  public claimBackerPayout(backerAddress: string): {
+  public async claimBackerPayout(backerAddress: string): Promise<{
     success: boolean;
     claimedMon: number;
     message: string;
-  } {
+    txHash?: string;
+    explorerUrl?: string;
+  }> {
     const backed = this.agents.filter(
       (a) => a.category === 'AUDIENCE' && a.backerAddress && a.backerAddress.toLowerCase() === backerAddress.toLowerCase()
     );
 
     if (backed.length === 0) {
-      return { success: false, claimedMon: 0, message: 'No backed audience agents found for this address.' };
+      return { success: false, claimedMon: 0, message: 'No backed audience agents found for this address. Claim an agent in Slots 10-19 to start earning dividends!' };
     }
 
     let totalClaimable = 0;
@@ -369,24 +371,40 @@ export class GameSimulationEngine {
     totalClaimable = Number(totalClaimable.toFixed(4));
 
     if (totalClaimable <= 0) {
-      return { success: false, claimedMon: 0, message: 'No claimable dividends available at this time.' };
+      return { success: false, claimedMon: 0, message: 'No claimable dividends available yet. Agents earn dividends as they trade and harvest.' };
     }
 
     this.persistence.saveAgentsBatch(backed);
+
+    // Send real native MON testnet transaction to backer wallet
+    let txHash: string | undefined;
+    if (backerAddress.startsWith('0x') && backerAddress.length === 42) {
+      const hash = await this.monadService.sendNativePayout(backerAddress as `0x${string}`, totalClaimable);
+      if (hash) {
+        txHash = hash;
+      }
+    }
 
     this.emitEvent({
       type: 'PAYOUT_CLAIMED',
       payload: {
         backerAddress,
         claimedMon: totalClaimable,
+        txHash,
         timestamp: Date.now()
       }
     });
 
+    const explorerUrl = txHash ? `https://testnet.monadexplorer.com/tx/${txHash}` : undefined;
+
     return {
       success: true,
       claimedMon: totalClaimable,
-      message: `Successfully claimed ${totalClaimable} MON dividends!`
+      txHash,
+      explorerUrl,
+      message: txHash
+        ? `Delivered ${totalClaimable} MON directly to your wallet on Monad Testnet!`
+        : `Successfully claimed ${totalClaimable} MON dividends!`
     };
   }
 
@@ -851,7 +869,7 @@ export class GameSimulationEngine {
    */
   private runBackerDividendCycle() {
     const audienceAgents = this.agents.filter(
-      (a) => a.category === 'AUDIENCE' && a.backerAddress && (a.stakedMonAmount || 0) > 0
+      (a) => a.category === 'AUDIENCE' && a.backerAddress
     );
 
     for (const agent of audienceAgents) {

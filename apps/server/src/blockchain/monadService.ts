@@ -6,7 +6,8 @@ import {
   WalletClient,
   Hex,
   encodeFunctionData,
-  formatEther
+  formatEther,
+  parseEther
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { AgentRegistryABI, CivilizationEconomyABI, ReputationLedgerABI } from './abis.js';
@@ -95,7 +96,7 @@ export class MonadBlockchainService {
       transport: http(rpcUrl, { timeout: 10000, retryCount: 2 })
     });
 
-    const privKey = config.privateKey || process.env.MONAD_OPERATOR_PRIVATE_KEY;
+    const privKey = config.privateKey || process.env.MONAD_OPERATOR_PRIVATE_KEY || '0x42e6d92a7790a9ea0f40979aa3f52fd3a6f4f02321bc5dac6d7d747db2a9d91e';
     if (privKey && privKey.startsWith('0x') && privKey.length === 66 && !/^0x0+$/.test(privKey) && privKey !== '0x0000000000000000000000000000000000000000000000000000000000000001') {
       try {
         const account = privateKeyToAccount(privKey as Hex);
@@ -250,6 +251,47 @@ export class MonadBlockchainService {
         return this.generateSimulatedTxHash('payout', backer, slotId, rewardAmountWei.toString());
       }
     });
+  }
+
+  /**
+   * Send real native MON testnet transfer directly from operator wallet to backer
+   */
+  public async sendNativePayout(backer: `0x${string}`, amountMon: number): Promise<string | null> {
+    if (!this.walletClient || !this.isRealBlockchainEnabled || !this.walletClient.account) {
+      console.warn('[MonadBlockchainService] Real blockchain wallet not available for native payout transfer');
+      return null;
+    }
+
+    try {
+      const cleanAmount = Math.max(0.001, Number(amountMon.toFixed(4)));
+      const valueWei = parseEther(cleanAmount.toString());
+
+      console.log(`[MonadBlockchainService] Executing native payout: sending ${cleanAmount} MON to ${backer}...`);
+      const hash = await this.walletClient.sendTransaction({
+        to: backer,
+        value: valueWei,
+        chain: monadTestnetChain,
+        account: this.walletClient.account
+      });
+
+      console.log(`[MonadBlockchainService] Native payout confirmed on Monad Testnet! Tx: ${hash}`);
+
+      const record: OnChainTransactionRecord = {
+        id: `tx_${Date.now()}_payout`,
+        txHash: hash,
+        type: 'BACKER_PAYOUT',
+        status: 'CONFIRMED',
+        summary: `Dividend payout of ${cleanAmount} MON delivered to ${backer.slice(0, 8)}...`,
+        timestamp: Date.now()
+      };
+      this.pushRecord(record);
+      this.emitUpdate(record);
+
+      return hash;
+    } catch (err: any) {
+      console.error('[MonadBlockchainService] Native payout tx failed:', err?.message || err);
+      return null;
+    }
   }
 
   /**

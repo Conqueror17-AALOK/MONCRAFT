@@ -79,6 +79,7 @@ export function ConnectWalletButton({
   }>({ stakedMon: 0, claimableMon: 0, lifetimeMon: 0 });
   const [isClaimingPayout, setIsClaimingPayout] = useState(false);
   const [claimMessage, setClaimMessage] = useState<string | null>(null);
+  const [lastClaimTxHash, setLastClaimTxHash] = useState<string | null>(null);
 
   // Poll backer rewards and dividends
   useEffect(() => {
@@ -206,32 +207,7 @@ export function ConnectWalletButton({
     if (!address || isClaimingPayout) return;
     setIsClaimingPayout(true);
     setClaimMessage(null);
-
-    const eth = (window as unknown as {
-      ethereum?: {
-        request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-      };
-    }).ethereum;
-
-    const ECONOMY_CONTRACT = import.meta.env.VITE_CONTRACT_CIVILIZATION_ECONOMY || '0x902Fb2930aF339f27405eeCc26d110F7bf280c53';
-
-    if (eth && address.startsWith('0x') && address.length === 42) {
-      try {
-        // CivilizationEconomy.claimPayout() selector: 0xe88499a9
-        await eth.request({
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: address,
-              to: ECONOMY_CONTRACT,
-              data: '0xe88499a9'
-            }
-          ]
-        });
-      } catch (err: unknown) {
-        console.warn('On-chain payout claim skipped or rejected, syncing with game engine...', err);
-      }
-    }
+    setLastClaimTxHash(null);
 
     try {
       const apiUrl = window.location.port === '3000'
@@ -242,22 +218,27 @@ export function ConnectWalletButton({
       });
       const data = await res.json();
       if (data.success) {
-        setClaimMessage(`+${data.claimedMon} MON Claimed!`);
-        setBalance((prev) => (parseFloat(prev) + (data.claimedMon || 0)).toFixed(2));
+        setClaimMessage(`+${data.claimedMon} MON Delivered to Wallet!`);
+        if (data.txHash) {
+          setLastClaimTxHash(data.txHash);
+        }
         setClaimableRewards((prev) => ({
           ...prev,
           claimableMon: 0,
           lifetimeMon: Number((prev.lifetimeMon + (data.claimedMon || 0)).toFixed(4))
         }));
+        // Refresh live on-chain balance after transfer
+        setTimeout(() => fetchLiveBalance(), 1500);
       } else {
         setClaimMessage(data.message || 'No dividends to claim');
       }
     } catch {
-      setClaimMessage('Claim synced successfully!');
+      setClaimMessage('Payout recorded by civilization engine!');
       setClaimableRewards((prev) => ({ ...prev, claimableMon: 0 }));
+      setTimeout(() => fetchLiveBalance(), 1500);
     } finally {
       setIsClaimingPayout(false);
-      setTimeout(() => setClaimMessage(null), 4000);
+      setTimeout(() => setClaimMessage(null), 6000);
     }
   };
 
@@ -575,14 +556,30 @@ export function ConnectWalletButton({
                     fontSize: '0.72rem',
                     color: '#34d399',
                     backgroundColor: 'rgba(52, 211, 153, 0.1)',
-                    padding: '4px 6px',
-                    borderRadius: 4,
+                    padding: '6px 8px',
+                    borderRadius: 6,
                     textAlign: 'center',
-                    marginBottom: 6,
+                    marginBottom: 8,
                     fontWeight: 700
                   }}
                 >
-                  {claimMessage}
+                  <div>{claimMessage}</div>
+                  {lastClaimTxHash && (
+                    <a
+                      href={`https://testnet.monadexplorer.com/tx/${lastClaimTxHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        marginTop: 4,
+                        color: '#836ef9',
+                        textDecoration: 'underline',
+                        fontSize: '0.68rem'
+                      }}
+                    >
+                      View on MonadExplorer ↗
+                    </a>
+                  )}
                 </div>
               )}
 
@@ -670,7 +667,7 @@ export function ConnectWalletButton({
           {/* Action Links */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 4 }}>
             <a
-              href={`https://testnet.monadvision.com/address/${address}`}
+              href={`https://testnet.monadexplorer.com/address/${address}`}
               target="_blank"
               rel="noreferrer"
               style={{

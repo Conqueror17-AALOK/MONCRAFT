@@ -166,7 +166,7 @@ export function WalletConnectModal({
                   chainName: 'Monad Testnet',
                   nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 },
                   rpcUrls: ['https://testnet-rpc.monad.xyz'],
-                  blockExplorerUrls: ['https://testnet.monadvision.com']
+                  blockExplorerUrls: ['https://testnet.monadexplorer.com']
                 }
               ]
             });
