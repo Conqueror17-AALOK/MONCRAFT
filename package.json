@@ -1,0 +1,30 @@
+{
+  "name": "living-onchain-civilization",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Autonomous 3D Civilization Simulation on Monad Testnet with NVIDIA NIM",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "contracts"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"cyan.bold,magenta.bold\" \"npm run dev --workspace=apps/server\" \"npm run dev --workspace=apps/client\"",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:client": "npm run dev --workspace=apps/client",
+    "frontend": "npm run dev:client",
+    "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/client",
+    "typecheck": "npm run typecheck --workspace=packages/shared && npm run typecheck --workspace=apps/server && npm run typecheck --workspace=apps/client",
+    "test": "npm run test --workspaces --if-present",
+    "audit:system": "npx tsx scripts/audit_system.ts",
+    "deploy:contracts": "npm run deploy:testnet --workspace=contracts",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

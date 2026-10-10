@@ -1,0 +1,89 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+# Production build outputs
+dist/
+build/
+out/
+.next/
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+!.env.example
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# Editor & OS files
+.DS_Store
+*.pem
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Database & SQLite files
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+# Hardhat & Foundry artifacts
+contracts/artifacts/
+contracts/cache/
+contracts/typechain/
+contracts/typechain-types/
+# Temporary and test outputs
+tmp/
+temp/
+coverage/
+.nyc_output/
+scratch/
+# Docker volumes & local data
+data/
+# AI Agent & IDE artifacts
+.agent/
+.agents/
+.claude/
+.gemini/
+.gsd/
+adapters/
+GSD-STYLE.md
+model_capbilities.yaml
+model_capabilities.yaml
+project_rules.md
+PROJECT_RULES.md
+VERSION
+.opencode/
+
+# Documentation and planning files
+PLAN.md
+plan.md
+PERFORMANCE.md
+performance.md
+PITCH_AND_SOCIALS.md
+pitch_and_socials.md
+PROJECT.md
+project.md
+SECURITY.md
+security.md
+CONTRACTS.md
+contracts.md
+AGENT.md
+agent.md
+AGENTS.md
+agents.md
+
