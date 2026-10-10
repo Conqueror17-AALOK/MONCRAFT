@@ -215,6 +215,16 @@ async function bootstrap() {
     return { backerAddress: address, ...info };
   });
 
+  // REST: Prepare on-chain credit so MetaMask claimPayout() can confirm without revert
+  fastify.post<{ Params: { address: string } }>('/api/backers/:address/prepare-claim', async (req, reply) => {
+    const { address } = req.params;
+    if (!address) {
+      return reply.code(400).send({ error: 'Backer address is required' });
+    }
+    const result = await gameEngine.prepareBackerPayout(address);
+    return result;
+  });
+
   // REST: Claim participant dividend payout
   fastify.post<{ Params: { address: string } }>('/api/backers/:address/claim', async (req, reply) => {
     const { address } = req.params;

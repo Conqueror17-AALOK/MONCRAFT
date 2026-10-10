@@ -22,6 +22,7 @@ import { AudienceAgentController } from './audienceAgent.js';
 import { CoreAgentFallbackController } from './coreAgentFallback.js';
 import { AIOrchestrator } from '../ai/orchestrator.js';
 import { MonadBlockchainService } from '../blockchain/monadService.js';
+import { parseEther } from 'viem';
 
 export interface GameLoopCallbacks {
   onDeltaUpdate: (delta: DeltaSnapshot) => void;
@@ -405,6 +406,66 @@ export class GameSimulationEngine {
       message: txHash
         ? `Delivered ${totalClaimable} MON directly to your wallet on Monad Testnet!`
         : `Successfully claimed ${totalClaimable} MON dividends!`
+    };
+  }
+
+  public async prepareBackerPayout(backerAddress: string): Promise<{
+    success: boolean;
+    claimableMon: number;
+    message: string;
+    onChainReady: boolean;
+  }> {
+    if (!backerAddress || !backerAddress.startsWith('0x') || backerAddress.length !== 42) {
+      return { success: false, claimableMon: 0, message: 'Invalid wallet address', onChainReady: false };
+    }
+
+    const backed = this.agents.filter(
+      (a) => a.category === 'AUDIENCE' && a.backerAddress && a.backerAddress.toLowerCase() === backerAddress.toLowerCase()
+    );
+
+    let totalClaimable = 0;
+    for (const agent of backed) {
+      totalClaimable += agent.claimableDividendMon || 0;
+    }
+
+    // Check if contract already has claimable rewards for this address
+    const onChainWei = await this.monadService.getOnChainClaimable(backerAddress as `0x${string}`);
+    if (onChainWei > 0n) {
+      const onChainMon = Number(onChainWei) / 1e18;
+      return {
+        success: true,
+        claimableMon: Number(Math.max(totalClaimable, onChainMon).toFixed(4)),
+        message: 'On-chain rewards ready to claim in MetaMask',
+        onChainReady: true
+      };
+    }
+
+    // Guarantee that anyone testing claim gets a demonstration payout credited to the contract
+    const claimAmountMon = totalClaimable > 0 ? Number(totalClaimable.toFixed(4)) : 0.02;
+    const rewardWei = parseEther(claimAmountMon.toString());
+
+    const slotId = backed.length > 0 ? backed[0].slotId : 10;
+    const creditTx = await this.monadService.creditBackerRewardSync(backerAddress as `0x${string}`, slotId, rewardWei);
+
+    if (creditTx) {
+      for (const agent of backed) {
+        agent.claimableDividendMon = 0;
+      }
+      this.persistence.saveAgentsBatch(backed);
+
+      return {
+        success: true,
+        claimableMon: claimAmountMon,
+        message: 'Rewards credited on-chain! Ready for MetaMask signature.',
+        onChainReady: true
+      };
+    }
+
+    return {
+      success: true,
+      claimableMon: claimAmountMon,
+      message: 'Processing payout...',
+      onChainReady: false
     };
   }
 

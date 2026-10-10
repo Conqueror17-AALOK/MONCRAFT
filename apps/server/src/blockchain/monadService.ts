@@ -254,6 +254,53 @@ export class MonadBlockchainService {
   }
 
   /**
+   * Synchronously credit rewards to CivilizationEconomy contract so MetaMask simulation succeeds
+   */
+  public async creditBackerRewardSync(backer: `0x${string}`, slotId: number, rewardAmountWei: bigint): Promise<string | null> {
+    if (!this.walletClient || !this.isRealBlockchainEnabled || !this.walletClient.account) {
+      console.warn('[MonadBlockchainService] Real blockchain wallet not available for creditBackerRewardSync');
+      return null;
+    }
+
+    try {
+      console.log(`[MonadBlockchainService] Crediting ${rewardAmountWei} wei on-chain for backer ${backer}...`);
+      const hash = await this.walletClient.writeContract({
+        address: this.economyAddress,
+        abi: CivilizationEconomyABI,
+        functionName: 'recordBackerPayout',
+        args: [backer, BigInt(slotId), rewardAmountWei],
+        chain: monadTestnetChain,
+        account: this.walletClient.account
+      });
+
+      console.log(`[MonadBlockchainService] Credit tx submitted: ${hash}, waiting for confirmation...`);
+      await this.publicClient.waitForTransactionReceipt({ hash });
+      console.log(`[MonadBlockchainService] Credit confirmed on-chain!`);
+      return hash;
+    } catch (err: any) {
+      console.error('[MonadBlockchainService] creditBackerRewardSync error:', err?.message || err);
+      return null;
+    }
+  }
+
+  /**
+   * Check on-chain claimable rewards on CivilizationEconomy
+   */
+  public async getOnChainClaimable(backer: `0x${string}`): Promise<bigint> {
+    try {
+      const info = (await this.publicClient.readContract({
+        address: this.economyAddress,
+        abi: CivilizationEconomyABI,
+        functionName: 'getBackerInfo',
+        args: [backer]
+      })) as readonly [bigint, bigint, bigint];
+      return info[1] || 0n;
+    } catch {
+      return 0n;
+    }
+  }
+
+  /**
    * Send real native MON testnet transfer directly from operator wallet to backer
    */
   public async sendNativePayout(backer: `0x${string}`, amountMon: number): Promise<string | null> {
