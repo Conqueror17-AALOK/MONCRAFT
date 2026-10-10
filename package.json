@@ -14,6 +14,7 @@
     "dev:client": "npm run dev --workspace=apps/client",
     "frontend": "npm run dev:client",
     "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/client",
+    "start": "node apps/server/dist/index.js",
     "typecheck": "npm run typecheck --workspace=packages/shared && npm run typecheck --workspace=apps/server && npm run typecheck --workspace=apps/client",
     "test": "npm run test --workspaces --if-present",
     "audit:system": "npx tsx scripts/audit_system.ts",
@@ -25,6 +26,6 @@
     "typescript": "^5.7.3"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.5.0"
   }
 }

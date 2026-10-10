@@ -1,8 +1,12 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
+import fastifyStatic from '@fastify/static';
 import dotenv from 'dotenv';
 import os from 'os';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import type { WebSocket } from 'ws';
 import {
   TOTAL_AGENTS,
@@ -18,7 +22,10 @@ import { GameSimulationEngine } from './simulation/gameLoop.js';
 
 dotenv.config();
 
-const PORT = parseInt(process.env.SERVER_PORT || '4000', 10);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PORT = parseInt(process.env.PORT || process.env.SERVER_PORT || '4000', 10);
 const HOST = process.env.SERVER_HOST || '0.0.0.0';
 const DB_FILE = process.env.DATABASE_FILE || './data/civilization.db';
 
@@ -270,6 +277,31 @@ async function bootstrap() {
   // Start authoritative 10 Hz game loop
   gameEngine.start(10);
   fastify.log.info('Game Simulation Engine started at 10 Hz authoritative tick rate');
+
+  // Register static client serving for unified production deployment
+  const candidatePaths = [
+    path.resolve(process.cwd(), 'apps/client/dist'),
+    path.resolve(__dirname, '../../client/dist'),
+    path.resolve(process.cwd(), '../client/dist')
+  ];
+  const clientDistPath = candidatePaths.find((p) => fs.existsSync(p));
+
+  if (clientDistPath) {
+    fastify.log.info(`Serving static client SPA bundle from: ${clientDistPath}`);
+    await fastify.register(fastifyStatic, {
+      root: clientDistPath,
+      prefix: '/',
+      wildcard: false
+    });
+
+    fastify.setNotFoundHandler((req, reply) => {
+      const url = req.raw.url || '';
+      if (!url.startsWith('/api') && !url.startsWith('/ws') && !url.startsWith('/health')) {
+        return reply.sendFile('index.html');
+      }
+      return reply.code(404).send({ error: 'Not Found' });
+    });
+  }
 
   try {
     await fastify.listen({ port: PORT, host: HOST });

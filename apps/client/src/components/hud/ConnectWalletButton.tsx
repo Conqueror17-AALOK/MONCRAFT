@@ -84,7 +84,10 @@ export function ConnectWalletButton({
   useEffect(() => {
     if (!address) return;
     const fetchRewards = () => {
-      fetch(`http://${window.location.hostname}:4000/api/backers/${address}/rewards`)
+      const apiUrl = window.location.port === '3000'
+        ? `http://${window.location.hostname}:4000/api/backers/${address}/rewards`
+        : `/api/backers/${address}/rewards`;
+      fetch(apiUrl)
         .then((res) => res.json())
         .then((data) => {
           if (data && typeof data.claimableMon === 'number') {
@@ -158,7 +161,10 @@ export function ConnectWalletButton({
       // 3. Game Server backend balance API fallback
       if (!resolvedBalance && address) {
         try {
-          const apiRes = await fetch(`http://${window.location.hostname}:4000/api/wallet/${address}/balance`);
+          const apiUrl = window.location.port === '3000'
+            ? `http://${window.location.hostname}:4000/api/wallet/${address}/balance`
+            : `/api/wallet/${address}/balance`;
+          const apiRes = await fetch(apiUrl);
           const apiData = await apiRes.json();
           if (apiData && apiData.balanceMon) {
             resolvedBalance = apiData.balanceMon;
@@ -228,7 +234,10 @@ export function ConnectWalletButton({
     }
 
     try {
-      const res = await fetch(`http://${window.location.hostname}:4000/api/backers/${address}/claim`, {
+      const apiUrl = window.location.port === '3000'
+        ? `http://${window.location.hostname}:4000/api/backers/${address}/claim`
+        : `/api/backers/${address}/claim`;
+      const res = await fetch(apiUrl, {
         method: 'POST'
       });
       const data = await res.json();
