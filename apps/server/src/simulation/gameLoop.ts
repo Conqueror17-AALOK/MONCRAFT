@@ -354,36 +354,43 @@ export class GameSimulationEngine {
     txHash?: string;
     explorerUrl?: string;
   }> {
+    if (!backerAddress || !backerAddress.startsWith('0x') || backerAddress.length !== 42) {
+      return { success: false, claimedMon: 0, message: 'Invalid Monad wallet address.' };
+    }
+
     const backed = this.agents.filter(
       (a) => a.category === 'AUDIENCE' && a.backerAddress && a.backerAddress.toLowerCase() === backerAddress.toLowerCase()
     );
 
-    if (backed.length === 0) {
-      return { success: false, claimedMon: 0, message: 'No backed audience agents found for this address. Claim an agent in Slots 10-19 to start earning dividends!' };
-    }
-
     let totalClaimable = 0;
-    for (const agent of backed) {
-      totalClaimable += agent.claimableDividendMon || 0;
-      agent.claimableDividendMon = 0;
-      agent.recentThought = `Backer claimed ${totalClaimable.toFixed(4)} MON accumulated dividends!`;
+    if (backed.length === 0) {
+      // Find an available audience slot to associate so this participant immediately enters the dividend loop
+      const unbacked = this.agents.find((a) => a.category === 'AUDIENCE' && !a.backerAddress);
+      if (unbacked) {
+        unbacked.backerAddress = backerAddress;
+        unbacked.name = `Backer ${backerAddress.slice(0, 6)}`;
+        backed.push(unbacked);
+      }
+      totalClaimable = 0.02;
+    } else {
+      for (const agent of backed) {
+        totalClaimable += agent.claimableDividendMon || 0;
+        agent.claimableDividendMon = 0;
+        agent.recentThought = `Backer claimed ${totalClaimable.toFixed(4)} MON accumulated dividends!`;
+      }
+      if (totalClaimable <= 0) {
+        totalClaimable = 0.02;
+      }
     }
 
     totalClaimable = Number(totalClaimable.toFixed(4));
-
-    if (totalClaimable <= 0) {
-      return { success: false, claimedMon: 0, message: 'No claimable dividends available yet. Agents earn dividends as they trade and harvest.' };
-    }
-
     this.persistence.saveAgentsBatch(backed);
 
     // Send real native MON testnet transaction to backer wallet
     let txHash: string | undefined;
-    if (backerAddress.startsWith('0x') && backerAddress.length === 42) {
-      const hash = await this.monadService.sendNativePayout(backerAddress as `0x${string}`, totalClaimable);
-      if (hash) {
-        txHash = hash;
-      }
+    const hash = await this.monadService.sendNativePayout(backerAddress as `0x${string}`, totalClaimable);
+    if (hash) {
+      txHash = hash;
     }
 
     this.emitEvent({

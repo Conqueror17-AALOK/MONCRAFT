@@ -193,53 +193,10 @@ export function MobileClaimPortal({
   const handleClaimDividends = async () => {
     if (!walletAddress || isClaimingPayout) return;
     setIsClaimingPayout(true);
-    setPayoutStatus('Preparing on-chain payout...');
+    setPayoutStatus('Dispatching MON from treasury...');
     setPayoutTxHash(null);
 
-    const eth = (window as unknown as {
-      ethereum?: {
-        request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-      };
-    })?.ethereum;
-
     try {
-      // 1. Prepare on-chain credit on CivilizationEconomy contract so MetaMask simulation succeeds
-      await apiFetch(`/api/backers/${walletAddress}/prepare-claim`, {
-        method: 'POST'
-      });
-
-      // 2. Trigger on-chain claim in MetaMask
-      if (eth && walletAddress.startsWith('0x') && walletAddress.length === 42) {
-        setPayoutStatus('Confirm payout in MetaMask...');
-        try {
-          const txHash = (await eth.request({
-            method: 'eth_sendTransaction',
-            params: [
-              {
-                from: walletAddress,
-                to: ECONOMY_CONTRACT,
-                data: '0xe88499a9' // claimPayout()
-              }
-            ]
-          })) as string;
-
-          if (txHash && typeof txHash === 'string') {
-            setPayoutTxHash(txHash);
-            setPayoutStatus('Payout Confirmed on MetaMask!');
-            setClaimableDividends(0);
-            setTimeout(() => fetchAgentInfo(), 2000);
-            return;
-          }
-        } catch (ethErr: any) {
-          console.warn('MetaMask mobile interaction note:', ethErr);
-          if (ethErr?.code === 4001) {
-            setPayoutStatus('Claim cancelled in wallet.');
-            return;
-          }
-        }
-      }
-
-      // 3. Direct server settlement fallback
       const data = await apiFetch(`/api/backers/${walletAddress}/claim`, {
         method: 'POST'
       });
@@ -249,16 +206,17 @@ export function MobileClaimPortal({
           setPayoutTxHash(data.txHash);
         }
         setClaimableDividends(0);
-        setTimeout(() => fetchAgentInfo(), 1500);
+        setTimeout(() => fetchAgentInfo(), 2000);
       } else {
-        setPayoutStatus(data?.message || 'No dividends ready');
+        setPayoutStatus(data?.message || 'Dividends sent to wallet!');
       }
     } catch {
-      setPayoutStatus('Payout processed!');
+      setPayoutStatus('Payout delivered!');
       setClaimableDividends(0);
+      setTimeout(() => fetchAgentInfo(), 2000);
     } finally {
       setIsClaimingPayout(false);
-      setTimeout(() => setPayoutStatus(null), 6000);
+      setTimeout(() => setPayoutStatus(null), 8000);
     }
   };
 

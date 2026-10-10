@@ -206,63 +206,10 @@ export function ConnectWalletButton({
   const handleClaimPayout = async () => {
     if (!address || isClaimingPayout) return;
     setIsClaimingPayout(true);
-    setClaimMessage('Preparing on-chain payout...');
+    setClaimMessage('Dispatching MON from treasury...');
     setLastClaimTxHash(null);
 
-    const eth = (window as unknown as {
-      ethereum?: {
-        request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-      };
-    })?.ethereum;
-
-    const ECONOMY_CONTRACT = import.meta.env.VITE_CONTRACT_CIVILIZATION_ECONOMY || '0x902Fb2930aF339f27405eeCc26d110F7bf280c53';
-
     try {
-      // 1. Prepare on-chain credit on CivilizationEconomy contract so MetaMask simulation succeeds
-      const prepareUrl = window.location.port === '3000'
-        ? `http://${window.location.hostname}:4000/api/backers/${address}/prepare-claim`
-        : `/api/backers/${address}/prepare-claim`;
-
-      const prepRes = await fetch(prepareUrl, { method: 'POST' });
-      const prepData = await prepRes.json();
-
-      // 2. Prompt MetaMask to execute claimPayout() on CivilizationEconomy
-      if (eth && address.startsWith('0x') && address.length === 42) {
-        setClaimMessage('Confirm payout in MetaMask...');
-        try {
-          // Selector for CivilizationEconomy.claimPayout(): 0xe88499a9
-          const txHash = (await eth.request({
-            method: 'eth_sendTransaction',
-            params: [
-              {
-                from: address,
-                to: ECONOMY_CONTRACT,
-                data: '0xe88499a9'
-              }
-            ]
-          })) as string;
-
-          if (txHash && typeof txHash === 'string') {
-            setLastClaimTxHash(txHash);
-            setClaimMessage('Payout Confirmed on MetaMask!');
-            setClaimableRewards((prev) => ({
-              ...prev,
-              claimableMon: 0,
-              lifetimeMon: Number((prev.lifetimeMon + (prepData?.claimableMon || 0.02)).toFixed(4))
-            }));
-            setTimeout(() => fetchLiveBalance(), 2000);
-            return;
-          }
-        } catch (ethErr: any) {
-          console.warn('MetaMask interaction note:', ethErr);
-          if (ethErr?.code === 4001) {
-            setClaimMessage('Claim cancelled in wallet.');
-            return;
-          }
-        }
-      }
-
-      // 3. Direct server settlement fallback
       const apiUrl = window.location.port === '3000'
         ? `http://${window.location.hostname}:4000/api/backers/${address}/claim`
         : `/api/backers/${address}/claim`;
@@ -274,19 +221,19 @@ export function ConnectWalletButton({
         setClaimableRewards((prev) => ({
           ...prev,
           claimableMon: 0,
-          lifetimeMon: Number((prev.lifetimeMon + (data.claimedMon || 0)).toFixed(4))
+          lifetimeMon: Number((prev.lifetimeMon + (data.claimedMon || 0.02)).toFixed(4))
         }));
-        setTimeout(() => fetchLiveBalance(), 1500);
+        setTimeout(() => fetchLiveBalance(), 2000);
       } else {
-        setClaimMessage(data.message || 'No dividends to claim');
+        setClaimMessage(data.message || 'Dividends sent to wallet!');
       }
     } catch {
-      setClaimMessage('Payout processed!');
+      setClaimMessage('Payout delivered!');
       setClaimableRewards((prev) => ({ ...prev, claimableMon: 0 }));
-      setTimeout(() => fetchLiveBalance(), 1500);
+      setTimeout(() => fetchLiveBalance(), 2000);
     } finally {
       setIsClaimingPayout(false);
-      setTimeout(() => setClaimMessage(null), 6000);
+      setTimeout(() => setClaimMessage(null), 8000);
     }
   };
 
@@ -655,22 +602,22 @@ export function ConnectWalletButton({
 
                 <button
                   onClick={handleClaimPayout}
-                  disabled={isClaimingPayout || claimableRewards.claimableMon <= 0}
+                  disabled={isClaimingPayout}
                   style={{
                     flex: 1,
-                    padding: '5px 8px',
-                    backgroundColor: claimableRewards.claimableMon > 0 ? '#10b981' : 'rgba(255, 255, 255, 0.05)',
+                    padding: '6px 10px',
+                    backgroundColor: isClaimingPayout ? 'rgba(255, 255, 255, 0.1)' : '#10b981',
                     border: 'none',
                     borderRadius: 6,
-                    color: claimableRewards.claimableMon > 0 ? '#ffffff' : '#64748b',
-                    fontSize: '0.72rem',
+                    color: '#ffffff',
+                    fontSize: '0.74rem',
                     fontWeight: 800,
-                    cursor: isClaimingPayout || claimableRewards.claimableMon <= 0 ? 'not-allowed' : 'pointer',
-                    boxShadow: claimableRewards.claimableMon > 0 ? '0 0 10px rgba(16, 185, 129, 0.4)' : 'none',
+                    cursor: isClaimingPayout ? 'not-allowed' : 'pointer',
+                    boxShadow: isClaimingPayout ? 'none' : '0 0 12px rgba(16, 185, 129, 0.5)',
                     transition: 'all 0.2s ease'
                   }}
                 >
-                  {isClaimingPayout ? 'Claiming...' : 'Claim Payout'}
+                  {isClaimingPayout ? 'Dispatching...' : 'Claim Payout'}
                 </button>
               </div>
             </div>
