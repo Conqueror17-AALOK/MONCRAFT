@@ -10,6 +10,7 @@
 [![Monad Testnet](https://img.shields.io/badge/Network-Monad%20Testnet%20(10143)-836ef9?style=for-the-badge&logo=ethereum&logoColor=white)](https://testnet.monadexplorer.com)
 [![NVIDIA NIM](https://img.shields.io/badge/AI%20Runtime-NVIDIA%20NIM-76B900?style=for-the-badge&logo=nvidia&logoColor=white)](https://build.nvidia.com)
 [![Demo Video](https://img.shields.io/badge/Demo%20Video-Watch%20on%20X-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/aalok_17_/status/2108918658630312406)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Performance](https://img.shields.io/badge/Performance-60%20FPS%20Target-10b981?style=for-the-badge)](PERFORMANCE.md)
 [![System Audit](https://img.shields.io/badge/System%20Audit-13%2F13%20Passing-brightgreen?style=for-the-badge)](scripts/audit_system.ts)
 
@@ -186,6 +187,8 @@ docker compose up --build
 ```
 ├── README.md                  # This file (Judges & evaluation quickstart)
 ├── CONTRIBUTORS.md            # Core team members & contribution details
+├── CONTRIBUTING.md            # Guidelines for community contributions
+├── LICENSE                    # MIT License open-source specification
 ├── AGENTS.md                  # Coding-agent operating manual & memory
 ├── CONTRACTS.md               # Smart contracts, ABIs, and deployed addresses
 ├── PITCH_AND_SOCIALS.md       # 3-minute pitch script & ready-to-post socials
@@ -209,7 +212,14 @@ docker compose up --build
 | **Indra Kurkute** | 3D World & Gameplay Engineer | Three.js / R3F Voxel Engine, Character Animations, Subsistence Economy Balancing |
 | **Yash Kanse** | Frontend UI & Web3 Engineer | Web3 Wallet Connect, Mobile QR Claiming Portal, Market Desk Charts, System Audits |
 
-*For detailed roles, architecture responsibilities, and contribution history, see [CONTRIBUTORS.md](CONTRIBUTORS.md).*
+- 🌟 **Full Contribution Details:** See [CONTRIBUTORS.md](CONTRIBUTORS.md) for individual responsibilities and historical commits.
+- 🤝 **Community Guidelines:** See [CONTRIBUTING.md](CONTRIBUTING.md) for pull request instructions and architectural rules.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
