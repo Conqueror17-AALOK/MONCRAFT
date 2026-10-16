@@ -9,7 +9,7 @@
 
 [![Monad Testnet](https://img.shields.io/badge/Network-Monad%20Testnet%20(10143)-836ef9?style=for-the-badge&logo=ethereum&logoColor=white)](https://testnet.monadexplorer.com)
 [![NVIDIA NIM](https://img.shields.io/badge/AI%20Runtime-NVIDIA%20NIM-76B900?style=for-the-badge&logo=nvidia&logoColor=white)](https://build.nvidia.com)
-[![Engine](https://img.shields.io/badge/3D%20Engine-Three.js%20%2F%20R3F-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
+[![Demo Video](https://img.shields.io/badge/Demo%20Video-Watch%20on%20X-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/aalok_17_/status/2108918658630312406)
 [![Performance](https://img.shields.io/badge/Performance-60%20FPS%20Target-10b981?style=for-the-badge)](PERFORMANCE.md)
 [![System Audit](https://img.shields.io/badge/System%20Audit-13%2F13%20Passing-brightgreen?style=for-the-badge)](scripts/audit_system.ts)
 
@@ -27,8 +27,9 @@
 | **2. CivilizationEconomy Contract** | `0x902Fb2930aF339f27405eeCc26d110F7bf280c53` | [View on Monad Explorer](https://testnet.monadexplorer.com/address/0x902Fb2930aF339f27405eeCc26d110F7bf280c53) |
 | **   AgentRegistry Contract** | `0x3846DD64271E806bf0DD612817797C7A35d08014` | [View on Monad Explorer](https://testnet.monadexplorer.com/address/0x3846DD64271E806bf0DD612817797C7A35d08014) |
 | **   ReputationLedger Contract** | `0xec91a69A6ec61dfe58C13738c94C5E38B9eD37c3` | [View on Monad Explorer](https://testnet.monadexplorer.com/address/0xec91a69A6ec61dfe58C13738c94C5E38B9eD37c3) |
-| **3. Live Application URL** | Spectator 3D World & Mobile Claim Portal | [Live Local Spectator Client](http://localhost:3000) • [Mobile QR Portal](http://localhost:3000/claim) |
-| **4. Deployment & Infrastructure** | Monad Testnet (10143) + 10Hz Engine + NVIDIA NIM | Monad RPC: `https://testnet-rpc.monad.xyz` |
+| **3. Live Application URL** | Spectator 3D World & Mobile Claim Portal | [Live Web App](https://moncraft-production.up.railway.app) • [Mobile QR Portal](https://moncraft-production.up.railway.app/claim/10) |
+| **4. Demo Video & X Announcement** | Official 30s Gameplay Demo & Post on X | [Watch Demo Video on X ↗](https://x.com/aalok_17_/status/2108918658630312406) |
+| **5. Deployment & Infrastructure** | Monad Testnet (10143) + 10Hz Engine + NVIDIA NIM | Monad RPC: `https://testnet-rpc.monad.xyz` |
 
 ---
 
@@ -173,9 +174,9 @@ docker compose up --build
 
 ## 📢 Build in Public & Social Media Links
 
-- **Twitter / X Announcement:** [Check Project Post on X ↗](https://x.com)  
+- **Twitter / X Announcement & 30s Gameplay Demo:** [Check Project Post & Demo Video on X ↗](https://x.com/aalok_17_/status/2108918658630312406)  
   *Tagging `@monad`, `@monad_dev`, `@geeky_kartikey` with `#MonadBlitz #MonadTestnet #BuildOnMonad`*
-- **30-Second Demo Video:** [Watch Demo Video ↗](https://x.com)
+- **Direct Link:** `https://x.com/aalok_17_/status/2108918658630312406`
 - **Full Social Post Drafts & Media Kit:** See [PITCH_AND_SOCIALS.md](PITCH_AND_SOCIALS.md)
 
 ---
@@ -184,6 +185,7 @@ docker compose up --build
 
 ```
 ├── README.md                  # This file (Judges & evaluation quickstart)
+├── CONTRIBUTORS.md            # Core team members & contribution details
 ├── AGENTS.md                  # Coding-agent operating manual & memory
 ├── CONTRACTS.md               # Smart contracts, ABIs, and deployed addresses
 ├── PITCH_AND_SOCIALS.md       # 3-minute pitch script & ready-to-post socials
@@ -196,6 +198,18 @@ docker compose up --build
 │   └── client/                # 3D R3F spectator client, LoadingScreen, QR modal
 └── contracts/                 # Hardhat smart contracts (Solidity 0.8.24)
 ```
+
+---
+
+## 👥 Contributors & Core Team
+
+| Contributor | Role | Focus Area |
+| :--- | :--- | :--- |
+| **Aalok Aage** | Project Lead & Core Architect | Full-Stack Architecture, Monad Smart Contracts, NVIDIA NIM, Deployment Pipelines |
+| **Indra Kurkute** | 3D World & Gameplay Engineer | Three.js / R3F Voxel Engine, Character Animations, Subsistence Economy Balancing |
+| **Yash Kanse** | Frontend UI & Web3 Engineer | Web3 Wallet Connect, Mobile QR Claiming Portal, Market Desk Charts, System Audits |
+
+*For detailed roles, architecture responsibilities, and contribution history, see [CONTRIBUTORS.md](CONTRIBUTORS.md).*
 
 ---
 
