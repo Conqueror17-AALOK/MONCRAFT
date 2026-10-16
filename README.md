@@ -208,9 +208,9 @@ docker compose up --build
 
 | Contributor | Role | Focus Area |
 | :--- | :--- | :--- |
-| **Aalok Aage** | Project Lead & Core Architect | Full-Stack Architecture, Monad Smart Contracts, NVIDIA NIM, Deployment Pipelines |
-| **Indra Kurkute** | 3D World & Gameplay Engineer | Three.js / R3F Voxel Engine, Character Animations, Subsistence Economy Balancing |
-| **Yash Kanse** | Frontend UI & Web3 Engineer | Web3 Wallet Connect, Mobile QR Claiming Portal, Market Desk Charts, System Audits |
+| [**Aalok Aage**](https://github.com/Conqueror17-AALOK) | Project Lead & Core Architect | Full-Stack Architecture, Monad Smart Contracts, NVIDIA NIM, Deployment Pipelines |
+| [**Indra Kurkute**](https://github.com/indrak31) | 3D World & Gameplay Engineer | Three.js / R3F Voxel Engine, Character Animations, Subsistence Economy Balancing |
+| [**Yash Kanse**](https://github.com/kanseyash65-lang) | Frontend UI & Web3 Engineer | Web3 Wallet Connect, Mobile QR Claiming Portal, Market Desk Charts, System Audits |
 
 - 🌟 **Full Contribution Details:** See [CONTRIBUTORS.md](CONTRIBUTORS.md) for individual responsibilities and historical commits.
 - 🤝 **Community Guidelines:** See [CONTRIBUTING.md](CONTRIBUTING.md) for pull request instructions and architectural rules.

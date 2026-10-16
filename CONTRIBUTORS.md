@@ -9,28 +9,28 @@
 
 | Contributor | Role & Domain | Key Focus Areas |
 | :--- | :--- | :--- |
-| **Aalok Aage** | **Project Lead & Core Systems Architect** | Full-Stack Architecture, Monad Smart Contracts (`CivilizationEconomy.sol`, `AgentRegistry.sol`, `ReputationLedger.sol`), NVIDIA NIM REST Integration, Viem Blockchain Queue, Docker & Production Deployments |
-| **Indra Kurkute** | **3D World & Gameplay Systems Engineer** | Three.js / React Three Fiber Voxel Environment, Biome Generation, Character Animation Engine, Dynamic Subsistence & Food Rationing Simulation |
-| **Yash Kanse** | **Frontend UI & Web3 Integration Engineer** | Web3 Multi-Wallet Connect Modal, Mobile QR Claiming Portal, Agora Market Desk & Economic Trend Graphs, QA Audits & System Compliance Verification |
+| [**Aalok Aage**](https://github.com/Conqueror17-AALOK) | **Project Lead & Core Systems Architect** | Full-Stack Architecture, Monad Smart Contracts (`CivilizationEconomy.sol`, `AgentRegistry.sol`, `ReputationLedger.sol`), NVIDIA NIM REST Integration, Viem Blockchain Queue, Docker & Production Deployments |
+| [**Indra Kurkute**](https://github.com/indrak31) | **3D World & Gameplay Systems Engineer** | Three.js / React Three Fiber Voxel Environment, Biome Generation, Character Animation Engine, Dynamic Subsistence & Food Rationing Simulation |
+| [**Yash Kanse**](https://github.com/kanseyash65-lang) | **Frontend UI & Web3 Integration Engineer** | Web3 Multi-Wallet Connect Modal, Mobile QR Claiming Portal, Agora Market Desk & Economic Trend Graphs, QA Audits & System Compliance Verification |
 
 ---
 
 ## 🛠️ Contribution Breakdown
 
-### 1. **Aalok Aage**
+### 1. [**Aalok Aage**](https://github.com/Conqueror17-AALOK)
 - **Architecture & System Design:** Formulated the canonical "Brain vs. Body" architecture separating LLM strategic decisions (NVIDIA NIM) from authoritative 10Hz game physics.
 - **Smart Contract Engineering:** Authored Solidity 0.8.24 contracts (`AgentRegistry`, `CivilizationEconomy`, `ReputationLedger`), Hardhat deployment pipelines, and passing unit test suites.
 - **Asynchronous Blockchain Integration:** Engineered the FIFO transaction queue with non-blocking Monad RPC dispatch, zero-nonce collisions, and dividend distribution logic.
 - **AI Orchestration & Guardrails:** Integrated NVIDIA NIM (`meta/llama-3.2-11b-vision-instruct`), strict Zod action validation, circuit breakers, and rate-limiting queues.
 - **DevOps & Infrastructure:** Configured multi-stage Docker builds, production static SPA delivery, and automated deployment pipelines on Railway.
 
-### 2. **Indra Kurkute**
+### 2. [**Indra Kurkute**](https://github.com/indrak31)
 - **3D Procedural Voxel World:** Crafted the multi-tiered stepped terrain, winding river, arched stone bridge, Commoner Village, Agora central plaza, and Kaelen's castle braziers.
 - **Performance & Asset Optimization:** Implemented instanced foliage (pines, oaks, bushes, rocks) achieving stable 60 FPS performance (<45 draw calls, <40k triangles).
 - **Procedural Character Animations:** Designed the 40 voxel avatars with shortest-arc turning interpolation, torso side-sway, step bounce, head glancing, and resource extraction recoil.
 - **Simulation Balancing:** Tuned resource harvest cycles, node replenishment rates (WOOD, WHEAT, IRON, GOLD), and agent pathfinding navigation meshes.
 
-### 3. **Yash Kanse**
+### 3. [**Yash Kanse**](https://github.com/kanseyash65-lang)
 - **Web3 Wallet & Claims Portal:** Engineered the responsive mobile participant portal (`/claim/:slotId`) enabling instant QR code scanning, agent claiming, and backer dividend tracking.
 - **Civilization Market Desk UI:** Built the interactive spectator modal with real-time SVG economic trend graphs for all 4 primary commodities and Agora municipal treasury tracking.
 - **Spectator Experience & HUD:** Implemented the AAA loading overlay with animated bouncy dots, floating 3D agent thoughts, live world event toast notifications, and F3 performance profiler.
@@ -76,4 +76,4 @@ npm run audit:system
 - **NVIDIA Developer Program:** For providing access to NVIDIA NIM cloud inference endpoints.
 
 ---
-*Maintained with ❤️ by Aalok Aage, Indra Kurkute, and Yash Kanse for MONCRAFT (2026).*
+*Maintained with ❤️ by [Aalok Aage](https://github.com/Conqueror17-AALOK), [Indra Kurkute](https://github.com/indrak31), and [Yash Kanse](https://github.com/kanseyash65-lang) for MONCRAFT (2026).*

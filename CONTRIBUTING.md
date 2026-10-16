@@ -7,9 +7,9 @@ We welcome contributions, bug reports, feature suggestions, and architectural en
 
 ## 🌟 Core Team & Contributors
 For full team profiles and historical contribution breakdowns, please see **[CONTRIBUTORS.md](CONTRIBUTORS.md)**:
-- **Aalok Aage** — Project Lead & Core Systems Architect
-- **Indra Kurkute** — 3D World & Gameplay Systems Engineer
-- **Yash Kanse** — Frontend UI & Web3 Integration Engineer
+- [**Aalok Aage**](https://github.com/Conqueror17-AALOK) — Project Lead & Core Systems Architect
+- [**Indra Kurkute**](https://github.com/indrak31) — 3D World & Gameplay Systems Engineer
+- [**Yash Kanse**](https://github.com/kanseyash65-lang) — Frontend UI & Web3 Integration Engineer
 
 ---
 
